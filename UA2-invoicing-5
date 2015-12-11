@@ -1,0 +1,42 @@
+//faktura na 1 product
+public class Invoice
+{
+    private float iprice; //cena produktu pri vystaveni faktury
+    private String iaddress; //adresa zakaznika pri vystaveni faktury
+    private Product iprod; //referencia na produkt
+    private Customer icust; //referencia na zakaznika
+
+    public Invoice(Customer cust, Product prod)
+    {
+        icust = cust;
+        iprod = prod;
+        iprice = prod.getProductPrice();
+        iaddress = cust.getAddress();
+    }
+    
+    public float getInvoicePrice()
+    {
+        return iprice;
+    }
+    
+    public String getInvoiceProduct()
+    {
+        return iprod.getProductDescription();
+    }
+    
+    public String getInvoiceName()
+    {
+        return icust.getName();
+    }
+    
+    public String getInvoiceAddress()
+    {
+        return iaddress;
+    }
+    
+    public String toString() //metoda vypisania textu pri volani funkcie, kde sa ocakava string
+    {
+        return " " + icust.getName() + ", " + iaddress + ", " + iprod.getProductDescription() + ", " + iprice;
+    }
+    
+}
