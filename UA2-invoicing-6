@@ -1,0 +1,33 @@
+//trieda s popisom tovaru a cenou
+public class Product
+{
+    private String description;
+    private Price prod_price = new Price();
+
+    public Product(String d, float p)
+    {
+        description = d;
+        prod_price.setPrice(p);
+    }
+
+    public String getProductDescription()
+    {
+        return description;  
+    }
+    
+    public float getProductPrice()
+    {
+        return prod_price.getPrice();  
+    }
+    
+     public void setProductPrice(float p)
+    {
+        prod_price.setPrice(p);  
+    }
+    
+    public String toString() //metoda vypisania textu pri volani funkcie, kde sa ocakava string
+    {
+        return " " + description + ", " + prod_price.getPrice();
+    }
+    
+}
