@@ -1,0 +1,26 @@
+//trieda pre uchovavanie ceny tovaru
+public class Price
+{
+    private float price;
+
+    public Price(float p)
+    {
+        price = p;
+    }
+    
+    public Price()
+    {
+        price = 0f;
+    }
+    
+    public float getPrice()
+    {
+        return price;
+    }
+    
+    public void setPrice(float p)
+    {
+        price = p;
+    }
+
+}
