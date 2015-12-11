@@ -1,0 +1,196 @@
+// David Staruch, 2015
+// simulacia manazmentu stranok virtualnej pamate
+// virtual memory - comparison of three algorithms for removal of RAM frames/pages to the swap
+
+#include <iostream>
+#include <random>
+#include <chrono>
+using namespace std;
+
+// hladanie pritomnosti stranky v pamati RAM
+int search(int x, int* ram, int max)
+{
+    for (int i = 0; i < max; i++)
+        if (ram[i] == x) {
+            return (i);
+        }
+    return (-1);
+}
+
+int main()
+{
+
+	//nacitanie premennych pre testovanie
+		//cout << "Zadaj pocet stranok virtualnej pamate:";
+	    int pages = 64;    
+	    //cin >> pages;
+		
+		cout << "\nZadaj maximalny pocet stranok v pamati RAM:";
+	    int max;    
+	    cin >> max;
+    
+	//inicializacia generatora nahodnych cisel
+		auto t = chrono::high_resolution_clock::now().time_since_epoch().count();
+	    mt19937 engine(static_cast<unsigned int>(t));
+ 		uniform_int_distribution<int> rpage(1, pages); //random pre testovaciu sekvenciu
+  		uniform_int_distribution<int> randout(0, (max-1)); //random pre vyhadzovanie stranok
+	    
+    //generovanie testovacej sekvencie o dlzke v pocte stranok virtualnej pamate
+	    /* POZOR NA DELETE NIZSIE!!!
+		int* tsequence = new int[(pages)];
+	    for (int i = 0; i < (pages); i++)
+	        tsequence[i] = rpage(engine); 
+		*/ 
+			
+			int tsequence[] = {32,24,26,39,61,30,8,60,59,5,24,53,28,14,9,15,31,57,29,11,3,6,18,41,10,53,42,41,50,6,36,11,61,57,63,15,42,14,61,53,56,6,28,62,41,31,30,40,60,26,2,52,49,55,7,34,7,54,47,51,64,23,57,37};
+     	 
+    //inicializacia stranok v pamati RAM
+	    int* ram = new int[max];
+	    for (int i = 0; i < max; i++)
+	        ram[i] = -1;
+    
+    //vypis testovacej sekvencie stranok
+    cout << "Testovacia sekvencia stranok\n";    
+	    for (int t = 0; t<(pages); t++) { 
+	    	
+			cout << tsequence[t] << ",";
+			}
+    cout << "\n\n";
+    
+    //pracovne premenne
+	int occupied = 0, c = 0, res, x, interuptions_fifo = 0, interuptions_rand = 0, interuptions_lru = 0;
+    
+    ///////////////////////////////////////
+	//FIFO algoritmus vyradovania stranok//
+	///////////////////////////////////////
+	
+    for (int a = 0; a<(pages); a++) {
+        
+        x = tsequence[a];
+        
+        if (occupied < max) {
+                if ((res = search(x, ram, max)) != -1) {
+                    //cout << "Stranka " << x << " VP sa nachadza na stranke " << res << " v RAM.\n";
+                }
+                else {
+                    //cout << "Stranke " << x << " VP bola alokovana stranka " << occupied << " v RAM.\n";
+                    ram[occupied++] = x;
+                    interuptions_fifo++;
+                }
+            }
+        else {
+                if ((res = search(x, ram, max)) != -1) {
+                    //cout << "Stranka " << x << " VP sa nachadza na stranke " << res << " v RAM.\n";
+                }
+                else {
+					//cout << "Stranke " << x << " VP bola alokovana stranka " << c << " v RAM.\nStranka " << ram[c] << " sa presunula do swapu.\n";
+                    ram[c] = x;
+                    c = (c + 1) % max;
+                    interuptions_fifo++;
+                }
+        }
+    }
+	
+	//vycistenie RAM a premennych pred dalsim testom
+	    for (int i = 0; i < max; i++)
+	        ram[i] = -1;
+	    occupied = 0;
+		t = chrono::high_resolution_clock::now().time_since_epoch().count();
+		
+	/////////////////////////////////////////
+	//Random algoritmus vyradovania stranok//
+	/////////////////////////////////////////
+	
+    for (int a = 0; a<(pages); a++) {
+        
+        x = tsequence[a];
+        
+        if (occupied < max) {
+                if ((res = search(x, ram, max)) != -1) {
+                    //cout << "Stranka " << x << " VP sa nachadza na stranke " << res << " v RAM.\n";
+                }
+                else {
+                    //cout << "Stranke " << x << " VP bola alokovana stranka " << occupied << " v RAM.\n";
+                    ram[occupied++] = x;
+                    interuptions_rand++;
+                }
+            }
+        else {
+                if ((res = search(x, ram, max)) != -1) {
+                    //cout << "Stranka " << x << " VP sa nachadza na stranke " << res << " v RAM.\n";
+                }
+                else {
+                	c = randout(engine);
+					//cout << "Stranke " << x << " VP bola alokovana stranka " << c << " v RAM.\nStranka " << ram[c] << " sa presunula do swapu.\n";
+                    ram[c] = x;
+                    interuptions_rand++;
+                }
+        }
+    }
+
+	//vycistenie RAM a premennych pred dalsim testom
+	    for (int i = 0; i < max; i++)
+	        ram[i] = -1;
+	    occupied = 0;
+
+	//////////////////////////////////////
+	//LRU algoritmus vyradovania stranok//
+	//////////////////////////////////////
+	
+	//inicializacia pocitadla pristupov
+	int* lru = new int[max];
+	    for (int i = 0; i < max; i++)
+	        lru[i] = 0;
+	
+	
+    for (int a = 0; a<(pages); a++) {
+        
+        x = tsequence[a];
+        
+        if (occupied < max) {
+                if ((res = search(x, ram, max)) != -1) {
+                    //cout << "Stranka " << x << " VP sa nachadza na stranke " << res << " v RAM.\n";
+                    lru[res] = a;
+                }
+                else {
+                    //cout << "Stranke " << x << " VP bola alokovana stranka " << occupied << " v RAM.\n";
+                    lru[occupied] = a;
+					ram[occupied++] = x;
+                    interuptions_lru++;
+                }
+            }
+        else {
+                if ((res = search(x, ram, max)) != -1) {
+                    //cout << "Stranka " << x << " VP sa nachadza na stranke " << res << " v RAM.\n";
+                    lru[res] = a;
+                }
+                else {
+                	
+                	int min=0,p=0;
+                	while(p<max-1) {
+                		if(lru[min]>lru[p+1])
+                			min=p+1;
+                		p++;
+					}
+                	
+					//cout << "Stranke " << x << " VP bola alokovana stranka " << min << " v RAM.\nStranka " << ram[min] << " sa presunula do swapu.\n";
+                    ram[min] = x;
+                    lru[min] = a;
+                    interuptions_lru++;
+                }
+        }
+    }
+
+
+    delete[] ram;
+    //delete[] tsequence;
+	delete[] lru;
+	
+	cout << "Pocet vypadkov pri FIFO algoritme: " << interuptions_fifo << endl
+		 << "Pocet vypadkov pri RAND algoritme: " << interuptions_rand << endl
+		 << "Pocet vypadkov pri LRU algoritme: "  << interuptions_lru << endl;
+
+	cin.get();
+	cin.get();
+  	return 0;
+}
