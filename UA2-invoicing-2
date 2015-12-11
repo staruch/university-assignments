@@ -1,0 +1,32 @@
+import java.util.Scanner;
+
+public class Validator
+{
+  public static float getFloat(){   
+    float valid_flt = 0;
+    boolean result = false;
+    String input;
+    Scanner in = new Scanner(System.in);
+    
+    do 
+    {
+        input = in.nextLine();
+        try {
+            valid_flt = Float.parseFloat(input);
+            result = true;
+        } catch(NumberFormatException e) {
+            System.out.println("Zadany udaj nie je cislo.");
+            System.out.print("Opakujte zadanie: ");
+        }
+    } while(result == false);
+    
+    return valid_flt;  
+}
+
+public static int getInt(){       
+    float input = Validator.getFloat();
+    int valid_int = (int) input;
+    
+    return valid_int;  
+}
+}
