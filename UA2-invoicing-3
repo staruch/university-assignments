@@ -1,0 +1,21 @@
+
+public class Menu
+{
+    /***************************************************/
+    public static int menu() {
+        System.out.println("\nJednoducha evidencia faktur a tovaru");
+        System.out.println("------------------------\n");
+        System.out.println("1 - Pridat noveho zakaznika");
+        System.out.println("2 - Zmena adresy zakaznika");
+        System.out.println("3 - Pridat tovarovu polozku");
+        System.out.println("4 - Zmena ceny tovaru");
+        System.out.println("5 - Vytvorit fakturu");
+        System.out.println("0 - Koniec");
+        System.out.println("------------------------\n");
+        System.out.print("Vasa volba: ");
+        
+        int selection = Validator.getInt();
+        return selection;  
+    }
+    
+}
