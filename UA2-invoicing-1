@@ -1,0 +1,169 @@
+import java.util.LinkedList;
+import java.util.Scanner;
+
+public class Main
+{
+     //hlavne telo programu
+     public static LinkedList<Customer> cust_list = new LinkedList<Customer>();
+     public static LinkedList<Product> prod_list = new LinkedList<Product>();
+     public static LinkedList<Invoice> inv_list = new LinkedList<Invoice>();
+     
+     public static void main(String[] args)
+     {
+        int userChoice;
+             
+        do{
+            printCustomers();
+            printProducts();
+            printInvoices();
+            
+            userChoice = Menu.menu();
+            
+            switch (userChoice) {
+                case 1:  Console.clearScreen();
+                         addCustomer();
+                         break;
+                case 2:  Console.clearScreen();
+                         changeAddress();
+                         break;
+                case 3:  Console.clearScreen();
+                         addProduct();
+                         break;
+                case 4:  Console.clearScreen();
+                         changeProdPrice();               
+                         break;
+                case 5:  Console.clearScreen();
+                         createInvoice();               
+                         break;
+                case 0:  Console.clearScreen();
+                         System.out.println("Koniec programu.");
+                         break; 
+                default: Console.clearScreen();
+                         System.out.println("Nespravna volba.\n");
+                         break;
+            }
+        
+        }while(userChoice != 0);
+               
+     }
+
+     private static void addCustomer()
+     {
+        Scanner in = new Scanner(System.in);
+        String name;
+        String address;
+        
+        System.out.println("Pridanie noveho zakaznika\n");
+        System.out.print("Meno: ");
+        name = in.nextLine();
+        System.out.print("Adresa: ");
+        address = in.nextLine();
+        
+        cust_list.add(new Customer(name, address));          
+        System.out.println("Zakaznik bol pridany\n");
+     }
+     
+     private static void printCustomers()
+     {
+        for (Customer item : cust_list)
+          System.out.println(cust_list.indexOf(item) + ": " + item);
+     }
+     
+     private static void changeAddress()
+     {
+        int index = -1;
+        Scanner in = new Scanner(System.in);
+        
+        printCustomers();
+        System.out.print("Zadajte poradove cislo: ");
+        index = Validator.getInt();
+        
+            try {
+                Customer e_cust = cust_list.get(index);
+                System.out.print("Zadajte novu adresu: ");
+                e_cust.setAddress(in.nextLine());
+                System.out.println("Adresa bola zmenena");
+            } catch(IndexOutOfBoundsException e) {
+                System.out.println("Nespravne poradove cislo zakaznika.\n");
+            }
+     }
+     
+     private static void addProduct()
+     {
+        Scanner in = new Scanner(System.in);
+        String description;
+        float price;
+        
+        System.out.println("Pridanie noveho tovaru\n");
+        System.out.print("Popis tovaru: ");
+        description = in.nextLine();
+        System.out.print("Cena: ");
+        price = Validator.getFloat();
+        
+        prod_list.add(new Product(description, price));          
+        System.out.println("Zakaznik bol pridany\n");
+     }
+     
+     private static void printProducts()
+     {
+        for (Product item : prod_list)
+          System.out.println(prod_list.indexOf(item) + ": " + item);
+     }
+              
+     private static void changeProdPrice()
+     {
+        int index = -1;
+        Scanner in = new Scanner(System.in);
+            
+        printProducts();
+        System.out.print("Zadajte poradove cislo: ");
+        index = Validator.getInt();
+            
+            try {
+             Product e_prod = prod_list.get(index);
+             System.out.print("Zadajte novu cenu: ");
+             e_prod.setProductPrice(Validator.getFloat());
+             System.out.println("Cena bola zmenena");
+            } catch (IndexOutOfBoundsException e) {
+             System.out.println("Nespravne poradove cislo produktu.\n");
+            }
+            
+     }
+     
+     private static void createInvoice()
+     {
+        int index = -1;
+        Scanner in = new Scanner(System.in);
+        Customer i_cust;
+        Product i_prod;
+        
+        printCustomers();
+        System.out.print("Poradove cislo zakaznika: ");
+        index = Validator.getInt();            
+            try {
+             i_cust = cust_list.get(index);
+            } catch (IndexOutOfBoundsException e) {
+             System.out.println("Nespravne poradove cislo zakaznika.\n");
+             return;
+            }
+        
+        printProducts();
+        System.out.print("Poradove cislo produktu: ");
+        index = Validator.getInt();
+            try {
+             i_prod = prod_list.get(index);
+            } catch (IndexOutOfBoundsException e) {
+             System.out.println("Nespravne poradove cislo produktu.\n");
+             return;
+            }
+        
+        inv_list.add(new Invoice(i_cust, i_prod));
+        System.out.println("Faktura bola pridana.\n");
+     }
+     
+     private static void printInvoices()
+     {
+        for (Invoice item : inv_list)
+          System.out.println(inv_list.indexOf(item) + ": " + item);
+     }
+}
